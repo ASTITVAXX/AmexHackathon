@@ -1,0 +1,15 @@
+### ✅ requirements.txt
+
+
+numpy
+pandas
+scikit-learn
+xgboost
+catboost
+matplotlib
+seaborn
+jupyter
+pyarrow
+
+
+

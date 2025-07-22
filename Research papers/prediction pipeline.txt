@@ -1,0 +1,189 @@
+              +--------------------+
+              |  train/test data   |  <- customer, offer, impression
+              +--------------------+
+                         |
+          +--------------+----------------------+
+          |                                     |
++-------------------+              +-------------------------+
+| offer_metadata    |              | add_event (click info)  |
++-------------------+              +-------------------------+
+          |                                     |
+      Feature joins                      Click/impression-based
+                                             features
+                         |
+          +-----------------------------+
+          |     add_trans (transactions)|
+          +-----------------------------+
+                         |
+               +------------------+
+               |  Final Feature DF |
+               +------------------+
+                         |
+                    Model Training
+                         |
+                  Click Probabilities
+                         |
+                    MAP@7 Ranking
+                         |
+                   Final Submission
+
+
+
+
+
+
+
+
+
+
+Based on the code and the sample data/column names printed in your notebook, here’s an analysis of what each column likely represents in your datasets:
+
+---
+
+### **Train & Test Data**
+
+**Columns:**
+- `id1`, `id2`, `id3`, `id4`, `id5`, `y` (train only), `f1` ... `f366` (train), `f1` ... `f366` (test, but no `y`)
+
+**From the sample data and dtypes:**
+- `id1`:  
+  Example: `1366776_189706075_16-23_2023-11-02 22:22:00.042`  
+  **Likely:** A composite key, possibly encoding customer, offer, and timestamp.  
+  **Pattern:** `<customer_id>_<offer_id>_<unknown>_<timestamp>`
+
+- `id2`:  
+  Example: `1366776`  
+  **Likely:** Customer ID (matches with `id2` in events and transactions, and is always numeric).
+
+- `id3`:  
+  Example: `189706075`  
+  **Likely:** Offer ID (matches with `id3` in events and offers, renamed to `offer_id` in your code).
+
+- `id4`:  
+  Example: `2023-11-02 22:22:00.042`  
+  **Likely:** Impression timestamp (when the offer was shown to the customer).
+
+- `id5`:  
+  Example: `2023-11-02`  
+  **Likely:** Impression date (date part of `id4`).
+
+- `y`:  
+  **Only in train.**  
+  **Likely:** Target variable (click or not click, 0/1).
+
+- `f1` ... `f366`:  
+  **Likely:** Engineered or anonymized features (could be customer, offer, or interaction features).
+
+---
+
+### **Events Data**
+
+**Columns:**
+- `id2`, `id3`, `id6`, `id4`, `id7`
+
+**From the sample data:**
+- `id2`: Customer ID (matches train/test `id2`)
+- `id3`: Offer ID (matches train/test `id3`)
+- `id6`: Example: `Tiles`  
+  **Likely:** Event type or channel (e.g., where the impression happened)
+- `id4`: Example: `2023-10-22 08:08:17.768`  
+  **Likely:** Impression timestamp (when the event occurred)
+- `id7`: Example: `None`  
+  **Likely:** Possibly additional event metadata (could be empty for many rows)
+
+---
+
+### **Transactions Data**
+
+**Columns:**
+- `id2`, `f367`, `f368`, `f369`, `f370`, `f371`, `f372`, `id8`, `f374`
+
+**From the sample data:**
+- `id2`: Customer ID
+- `f367`: Example: `15.60`  
+  **Likely:** Transaction amount
+- `f368`: Example: `PBR`  
+  **Likely:** Merchant/category code
+- `f369`: Example: `D`  
+  **Likely:** Transaction type
+- `f370`: Example: `2023-10-16  19:16:52`  
+  **Likely:** Transaction date and time
+- `f371`: Example: `202310`  
+  **Likely:** Year and month of transaction
+- `f372`: Example: `59639998`  
+  **Likely:** Merchant or location ID
+- `id8`: Example: `DSE`  
+  **Likely:** Another categorical transaction attribute
+- `f374`: Example: `DSE`  
+  **Likely:** Another categorical transaction attribute
+
+---
+
+### **Offers Data**
+
+**Columns:**
+- `id3`, `id9`, `f375`, `f376`, `f377`, `id10`, `id11`, `f378`, `f374`, `id8`, `id12`, `id13`
+
+**From the sample data:**
+- `id3`: Offer ID
+- `id9`: Example: `FO5O`, `UGE`  
+  **Likely:** Offer code or type
+- `f375`: Example: `2`, `1`  
+  **Likely:** Offer value or type code
+- `f376`: Example: `5.0`, `100.0`  
+  **Likely:** Offer amount or discount
+- `f377`: Example: `None`  
+  **Likely:** Possibly offer category or unused field
+- `id10`: Example: `1`  
+  **Likely:** Offer group or type
+- `id11`: Example: `None`  
+  **Likely:** Possibly unused or additional offer metadata
+- `f378`: Example: `N`  
+  **Likely:** Offer flag or type
+- `f374`, `id8`: Example: `None`  
+  **Likely:** Possibly unused or additional offer metadata
+- `id12`: Example: `2018-01-01 00:00:00`  
+  **Likely:** Offer start date
+- `id13`: Example: `2099-12-31 23:59:59`  
+  **Likely:** Offer end date
+
+---
+
+## **Summary Table**
+
+| Column         | Dataset(s)         | Likely Meaning                                 |
+|----------------|--------------------|------------------------------------------------|
+| id1            | train/test         | Composite key (customer, offer, timestamp)     |
+| id2            | all                | Customer ID                                    |
+| id3            | train/test/events/offers | Offer ID                                 |
+| id4            | train/test/events  | Impression timestamp/date                      |
+| id5            | train/test         | Impression date                                |
+| y              | train              | Target (click: 0/1)                            |
+| f1...f366      | train/test         | Features (anonymized/engineered)               |
+| id6            | events             | Event type/channel                             |
+| id7            | events             | Event metadata (often None)                    |
+| f367           | transactions       | Transaction amount                             |
+| f368           | transactions       | Merchant/category code                         |
+| f369           | transactions       | Transaction type                               |
+| f370           | transactions       | Transaction date and time                      |
+| f371           | transactions       | Year and month                                 |
+| f372           | transactions       | Merchant/location ID                           |
+| id8            | transactions/offers| Categorical attribute                          |
+| f374           | transactions/offers| Categorical attribute                          |
+| id9            | offers             | Offer code/type                                |
+| f375           | offers             | Offer value/type code                          |
+| f376           | offers             | Offer amount/discount                          |
+| f377           | offers             | Offer category/unused                          |
+| id10           | offers             | Offer group/type                               |
+| id11           | offers             | Additional offer metadata                      |
+| f378           | offers             | Offer flag/type                                |
+| id12           | offers             | Offer start date                               |
+| id13           | offers             | Offer end date                                 |
+
+---
+
+**Note:**  
+- The exact meaning of some `f*` columns is likely anonymized or engineered and may not be directly interpretable.
+- The mapping above is based on column names, sample values, and typical dataset structures for click prediction challenges.
+
+If you want a more detailed mapping or want to see the unique values for any specific column, let me know!
