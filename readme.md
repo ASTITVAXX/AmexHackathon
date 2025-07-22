@@ -1,11 +1,11 @@
-### ✅ README.md
+### README.md
 
 ```markdown
-# Amex Personalized Offer Click Prediction
+Amex Personalized Offer Click Prediction
 
 This project addresses the problem of predicting whether a customer will click on a personalized offer using transaction history, offer metadata, and behavioral features.
 
-## 📁 Project Structure
+## Project Structure
 
 amex-click-prediction/
 ├── data/                  
@@ -17,32 +17,32 @@ amex-click-prediction/
 └── README.md             
 ```
 
-## 🚀 Files Overview
+## Files Overview
 - `Feature_Engineering/` contains all feature engineering and training notebooks.
 - `src/main.py` is the main orchestration script (can call preprocessing + model).
 - `models/` holds `.pkl` or `.cbm` trained models.
 - `outputs/` has prediction visualizations and final submission.
 
-## 📊 Key Techniques
+## Key Techniques
 - Feature engineering from customer event logs
 - Offer metadata merging
 - XGBoost and CatBoost classifiers
 - Feature importance selection
 - One-hot encoding + category handling
 
-## 📈 Best Model Results
+## Best Model Results
 | Model     | Score (AUC or MAP@7) |
 |-----------|----------------------|
 | XGBoost   | 0.83 (validation)    |
 | CatBoost  | 0.84 (validation)    |
 
 
-## 📦 Requirements
+## Requirements
 ```bash
 pip install -r requirements.txt
 ```
 
-## 🛠️ How to Run
+## How to Run
 
 ### Step 1: Generate Final Train/Test Dataset
 Open and run `main.ipynb`
@@ -73,11 +73,11 @@ Open and run `submission.ipynb`
 
 
 
-## 📬 Final Output
+## Final Output
 Check `outputs/final_submission.csv` for predictions ready to be uploaded.
 
-## 👨‍💻 Author
-Astitva Roy | [LinkedIn](https://linkedin.com/in/your-profile)
+## Author
+Astitva Roy | [LinkedIn](https://www.linkedin.com/in/astitva-roy-b40097346/)
 ```
 ```
 
